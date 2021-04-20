@@ -36,9 +36,14 @@ public class RulesOf6005 {
             boolean availableToOthers, boolean writtenAsCourseWork,
             boolean citingYourSource, boolean implementationRequired) {
         
-        // TODO: Fill in this method, then remove the exception
+        // TODO: Fill in this method, then remove the exceptions
+        if (writtenByYourself || citingYourSource && implementationRequired) {
+            System.out.println(citingYourSource);
+            return true;
+        } else {
+            return false;
+        }
         
-        throw new RuntimeException("implement me!");
     }
     
     /**
