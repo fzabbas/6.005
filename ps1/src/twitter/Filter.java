@@ -3,7 +3,11 @@
  */
 package twitter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Filter consists of methods that filter a list of tweets for those matching a
@@ -27,7 +31,13 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> tweetsByUsername = new ArrayList<>();
+        tweets.forEach((tweet) -> {
+            if (tweet.getAuthor().toLowerCase().equals(username.toLowerCase())) {
+                tweetsByUsername.add(tweet);
+            };
+        });
+        return tweetsByUsername;
     }
 
     /**
@@ -41,7 +51,16 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> tweetsInTimespan = new ArrayList<>();
+        tweets.forEach(tweet -> {
+            if (tweet.getTimestamp().isAfter(timespan.getStart()) && 
+                    tweet.getTimestamp().isBefore(timespan.getEnd()) || 
+                    tweet.getTimestamp().equals(timespan.getStart()) ||
+                    tweet.getTimestamp().equals(timespan.getEnd())) {
+                tweetsInTimespan.add(tweet);
+            }
+        });
+        return tweetsInTimespan;
     }
 
     /**
@@ -60,7 +79,24 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> tweetsContaining = new ArrayList<>();
+        tweets.forEach((tweet) -> {
+            String tweetString = tweet.getText().toLowerCase();
+            if (words.stream()
+                    .map(n -> n.toLowerCase())
+                    .anyMatch(tweetString::contains)) {
+                tweetsContaining.add(tweet);
+                System.out.println(tweetString + "  "+ words);
+            };
+     
+//            tweetStream.anyMatch(arg0)
+//            mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
+//                    .map(String::toLowerCase)
+//                    .collect(Collectors.toSet()));
+        });
+        
+        return tweetsContaining;
+        
     }
 
 }

@@ -66,7 +66,6 @@ public class Extract {
         tweets.forEach((tweet) -> {
             String tweetString = tweet.getText();
             Stream<String> tweetStream = Arrays.stream(tweetString.split(" "));
-//            tweetStream.filter(s -> s.startsWith("@"));
             mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
                     .map(String::toLowerCase)
                     .collect(Collectors.toSet()));

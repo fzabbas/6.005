@@ -25,8 +25,8 @@ public class ExtractTest {
     
     private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
     private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes @alyssa #hype", d2);
-    private static final Tweet tweet3 = new Tweet(2, "bhelle", "talk in 30 minutes @ALyssa #hype", d3);
-    private static final Tweet tweet4 = new Tweet(2, "bhelle", "talk in 30 minutes @mike @alyssa #hype", d3);
+    private static final Tweet tweet3 = new Tweet(3, "bhelle", "talk in 30 minutes @ALyssa #hype", d3);
+    private static final Tweet tweet4 = new Tweet(4, "bhelle", "talk in 30 minutes @mike @alyssa #hype", d3);
 
     
     @Test(expected=AssertionError.class)
