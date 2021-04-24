@@ -21,13 +21,25 @@ public class ExtractTest {
     
     private static final Instant d1 = Instant.parse("2016-02-17T10:00:00Z");
     private static final Instant d2 = Instant.parse("2016-02-17T11:00:00Z");
+    private static final Instant d3 = Instant.parse("2015-02-17T11:00:00Z");
     
     private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
-    private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
+    private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes @alyssa #hype", d2);
+    private static final Tweet tweet3 = new Tweet(2, "bhelle", "talk in 30 minutes @ALyssa #hype", d3);
+    private static final Tweet tweet4 = new Tweet(2, "bhelle", "talk in 30 minutes @mike @alyssa #hype", d3);
+
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
         assert false; // make sure assertions are enabled with VM argument: -ea
+    }
+    
+    @Test
+    public void testGetTimespanOneTweet() {
+        Timespan timespan = Extract.getTimespan(Arrays.asList(tweet1));
+        
+        assertEquals("expected start", d1, timespan.getStart());
+        assertEquals("expected end", d1, timespan.getEnd());
     }
     
     @Test
@@ -39,10 +51,30 @@ public class ExtractTest {
     }
     
     @Test
+    public void testGetTimespanThreeTweets() {
+        Timespan timespan = Extract.getTimespan(Arrays.asList(tweet1, tweet2, tweet3));
+        
+        assertEquals("expected start", d3, timespan.getStart());
+        assertEquals("expected end", d2, timespan.getEnd());
+    }
+    
+    @Test
     public void testGetMentionedUsersNoMention() {
         Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet1));
         
         assertTrue("expected empty set", mentionedUsers.isEmpty());
+    }
+    
+    @Test
+    public void testGetMentionedUsersCaseInsensitive() {
+        Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet2, tweet3));
+        assertTrue("expected empty set", mentionedUsers.size() == 1);
+    }
+
+    @Test
+    public void testGetMentionedUsersNoRepeats() {
+        Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet2, tweet4));
+        assertTrue("expected empty set", mentionedUsers.size() == 2);
     }
 
     /*
