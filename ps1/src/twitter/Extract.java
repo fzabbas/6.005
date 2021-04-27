@@ -68,9 +68,9 @@ public class Extract {
             Stream<String> tweetStream = Arrays.stream(tweetString.split(" "));
             mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
                     .map(String::toLowerCase)
+                    .map(user -> user.substring(1))
                     .collect(Collectors.toSet()));
         });
         return mentions;
     }
-
 }

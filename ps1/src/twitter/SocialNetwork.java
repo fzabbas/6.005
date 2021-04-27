@@ -3,6 +3,12 @@
  */
 package twitter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +47,22 @@ public class SocialNetwork {
      *         either authors or @-mentions in the list of tweets.
      */
     public static Map<String, Set<String>> guessFollowsGraph(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        
+        Map<String, Set<String>> socialNetwork = new LinkedHashMap <>(); 
+        tweets.forEach(tweet -> {
+            String user = tweet.getAuthor();
+            if (socialNetwork.get(user) == null) {
+                socialNetwork.put(user, Extract.getMentionedUsers(Arrays.asList(tweet)));
+            } else {
+                socialNetwork.get(user).addAll(Extract.getMentionedUsers(Arrays.asList(tweet)));
+            }
+            
+            if (socialNetwork.get(user).contains(user)) {
+                socialNetwork.get(user).remove(user);
+            }
+        });
+
+        return socialNetwork;
     }
 
     /**
@@ -54,7 +75,31 @@ public class SocialNetwork {
      *         descending order of follower count.
      */
     public static List<String> influencers(Map<String, Set<String>> followsGraph) {
-        throw new RuntimeException("not implemented");
-    }
+        List <String> influencersList = new ArrayList <> ();
+        Map <String, Integer> influencersMap = new HashMap<>(); 
+        
+        followsGraph.forEach((user, mentionedUsers) -> {
+            if (!influencersMap.containsKey(user)) {
+                influencersMap.put(user, 0);
+            }
+            // if influencer does not exist, add to map with value 1; else, increment value of key by 1
+            mentionedUsers.forEach(influencer -> {
+                influencersMap.merge(influencer, 1, Integer::sum);
+            });
+        });
+        
+        // orderes influencers map according to number of followers
+        LinkedHashMap <String, Integer> reverseSortedMap = new LinkedHashMap <>();
+        influencersMap.entrySet()
+        .stream()
+        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())) 
+        .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
 
+        // add key from sorted map into influencersList
+        reverseSortedMap.forEach((key, value) -> {
+            influencersList.add(key);
+        });
+        
+        return influencersList;
+    }
 }

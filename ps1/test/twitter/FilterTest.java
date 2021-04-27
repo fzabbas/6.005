@@ -136,12 +136,6 @@ public class FilterTest {
         assertEquals("expected same order", 0, containing.indexOf(tweet1));
     }
     
-    @Test
-    public void testContainingNoExactMatching() {
-        List<Tweet> containing = Filter.containing(Arrays.asList(tweet1, tweet2, tweet3), Arrays.asList("riv"));
-        
-        assertTrue("expected empty list", containing.isEmpty());;
-    }
 
     /*
      * Warning: all the tests you write here must be runnable against any Filter
