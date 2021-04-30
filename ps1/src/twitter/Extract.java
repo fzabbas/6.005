@@ -61,16 +61,23 @@ public class Extract {
      *         include a username at most once.
      */
     public static Set<String> getMentionedUsers(List<Tweet> tweets) {
+//        Set<String> mentions = new HashSet <>();
+//        tweets.forEach((tweet) -> {
+//            String tweetString = tweet.getText();
+//            Stream<String> tweetStream = Arrays.stream(tweetString.split(" "));
+//            mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
+//                    .map(String::toLowerCase)
+//                    .map(user -> user.substring(1))
+//                    .collect(Collectors.toSet()));
+//        });
+//        return mentions;
         
-        Set<String> mentions = new HashSet <>();
-        tweets.forEach((tweet) -> {
+        return tweets.stream().flatMap((tweet) -> {
             String tweetString = tweet.getText();
             Stream<String> tweetStream = Arrays.stream(tweetString.split(" "));
-            mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
+            return tweetStream.filter(s -> s.startsWith("@"))
                     .map(String::toLowerCase)
-                    .map(user -> user.substring(1))
-                    .collect(Collectors.toSet()));
-        });
-        return mentions;
+                    .map(user -> user.substring(1));
+        }).collect(Collectors.toSet());
     }
 }

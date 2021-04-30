@@ -81,7 +81,7 @@ public class Filter {
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
         List<Tweet> tweetsContaining = new ArrayList<>();
         tweets.forEach((tweet) -> {
-            String tweetString = tweet.getText().toLowerCase();
+            List<String> tweetString = Arrays.asList(tweet.getText().toLowerCase().split(" "));
             if (words.stream()
                     .map(n -> n.toLowerCase())
                     .anyMatch(tweetString::contains)) {
@@ -89,10 +89,6 @@ public class Filter {
                 System.out.println(tweetString + "  "+ words);
             };
      
-//            tweetStream.anyMatch(arg0)
-//            mentions.addAll(tweetStream.filter(s -> s.startsWith("@"))
-//                    .map(String::toLowerCase)
-//                    .collect(Collectors.toSet()));
         });
         
         return tweetsContaining;
