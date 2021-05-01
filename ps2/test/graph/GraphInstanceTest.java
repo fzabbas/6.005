@@ -20,7 +20,16 @@ import org.junit.Test;
 public abstract class GraphInstanceTest {
     
     // Testing strategy
-    //   TODO
+    // Methods to test: 
+    // .add() --> add vertex to empty grpah, add existing vertex
+    // .remove() --> (i) vertex did not exist
+    //               (ii) Vertex removes, edges containing vertex removed
+    // .set() --> add new edge (i)vertices already exists, (ii)vertices does not exist
+    //            (iii) modify edge
+    //            (iv) remove edge , no. of vertices remain same
+    // .sources() --> return a map with key set of target, returns empty set if no target, value correspong to weight
+    // .target() --> return a map with key set of source, returns empty set if no source, value correspons to weight
+    // .vertices() --> return no. of vertices, is empty if no vertices
     
     /**
      * Overridden by implementation-specific test classes.
@@ -41,6 +50,104 @@ public abstract class GraphInstanceTest {
                 Collections.emptySet(), emptyInstance().vertices());
     }
     
-    // TODO other tests for instance methods of Graph
+    @Test
+    public void testAddVertexNotInGraph() {
+        assertTrue("expected vertex to be added", emptyInstance().add("A"));
+    }
     
+    @Test
+    public void testAddVertexInGraph() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        assertFalse("expected vertex to be added", graph.add("A"));
+    }
+    
+    @Test
+    public void testSetAddNewEdge() {
+        Graph<String> graph = emptyInstance();
+        assertTrue("Edge added, where none existed",graph.set("A", "B", 10)==0);
+        assertTrue("expected 2 vertex to be added", graph.vertices().size()==2);
+    }
+    
+    @Test
+    public void testSetAddNewEdgeWithExistingVertex() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 10);
+        assertTrue("Edge added, where none existed",graph.set("A", "C", 5)==0);
+        assertTrue("expected 1 vertex to be added", graph.vertices().size()==3);
+    }
+    
+    @Test
+    public void testSetModifyEdge() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 10);
+        assertTrue("Edge updated",graph.set("A", "B", 5)==10);
+    }
+    
+    @Test
+    public void testSetRemoveEdge() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 10);
+        graph.set("A", "B", 0);
+        assertFalse("Edge should be removed",graph.sources("B").containsKey("A"));
+        assertTrue("expected vertex to remain", graph.vertices().size()==2);
+    }
+    
+    @Test
+    public void testRemoveVertexNotInGrpah() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 10);
+        assertFalse("Graph should not expected to change",graph.remove("C"));
+    }
+    
+    @Test
+    public void testRemoveVertex() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        assertTrue("Graph should not expected to change",graph.remove("A"));
+        assertTrue("Vertices should be empty",graph.vertices().contains("A"));
+    }
+    
+    @Test
+    public void testRemoveVertexAndAssociatedEdges() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 5);
+        graph.set("C", "A", 10);
+        assertTrue("Graph should not expected to change",graph.remove("A"));
+        assertFalse("Sources of B should not contain A",graph.sources("B").containsKey("A"));
+        assertFalse("Target of C should not contain A",graph.targets("C").containsKey("A"));
+    }
+    
+    @Test
+    public void testSources() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 5);
+        graph.set("A", "C", 10);
+        assertTrue("Edge weight is the value of key",graph.sources("B").get("A")==5);
+        assertTrue("B contaisn 1 source",graph.sources("B").size()==1);
+        assertFalse("Sources of B should not contain C",graph.sources("B").containsKey("C"));
+    }
+    
+    @Test
+    public void testTargets() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 5);
+        graph.set("A", "C", 10);
+        assertTrue("Edge weight is the value of key",graph.targets("A").get("B")==5);
+        assertTrue("A contaisn 2 targets",graph.targets("A").size()==2);
+        assertFalse("Targets of B should not contain C",graph.targets("B").containsKey("C"));
+    }
+    
+    @Test
+    public void testVerticesEmpty() {
+        assertEquals("expected new graph to have no vertices",
+                Collections.emptySet(), emptyInstance().vertices());
+    }
+    
+    @Test
+    public void testVertices() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        assertEquals("expected 1 vertex", 1, emptyInstance().vertices().size());
+    }
 }
