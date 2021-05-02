@@ -4,9 +4,12 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of Graph.
@@ -15,44 +18,110 @@ import java.util.Set;
  */
 public class ConcreteVerticesGraph implements Graph<String> {
     
-    private final List<Vertex> vertices = new ArrayList<>();
+    private final List<Vertex<String>> vertices = new ArrayList<>();
     
+
     // Abstraction function:
-    //   TODO
+    //   A directed graph containing vertices, connected by edges of given weight
     // Representation invariant:
-    //   TODO
+    //   edges have a vaule greter than 0, vertex cannot be null, no repeated vertices in List
     // Safety from rep exposure:
-    //   TODO
+    //   fields are private, immutable or if mutable , make defensive copies
     
-    // TODO constructor
+    // constructor
+    public ConcreteVerticesGraph() {
+        checkRep();
+    }
     
-    // TODO checkRep
+    private void checkRep() {
+        vertices.forEach(vertex-> {
+            assert vertex != null; 
+        });
+        Set<Vertex<String>> verticesSet = new HashSet<>(vertices);
+        assert vertices.size() == verticesSet.size();
+    }
     
     @Override public boolean add(String vertex) {
-        throw new RuntimeException("not implemented");
+        checkRep();
+        if (!(vertices.contains(findVertex(vertex)))) {
+            vertices.add(new Vertex <String> (vertex));
+            return true;
+        }         
+        return false;
+    
     }
     
     @Override public int set(String source, String target, int weight) {
-        throw new RuntimeException("not implemented");
+        Vertex<String> sourceVertex = findVertex(source);
+        Vertex<String> targetVertex = findVertex(target);
+        vertices.add(sourceVertex);
+        vertices.add(targetVertex);
+        if (!sourceVertex.getEdgesOut().containsKey(targetVertex)) {
+            sourceVertex.addEdgeOut(targetVertex, weight);
+            targetVertex.addEdgeIn(sourceVertex, weight);
+            return 0;
+        } else {
+            int oldWeight = sourceVertex.getWeight(targetVertex);
+            sourceVertex.removeEdgeOut(targetVertex);
+            targetVertex.removeEdgeIn(sourceVertex);
+            if (weight>0) {
+                sourceVertex.addEdgeOut(targetVertex, weight);
+                targetVertex.addEdgeIn(sourceVertex, weight);
+            }
+            return oldWeight;
+        }
     }
     
     @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+        Vertex<String> vertexToDelete = findVertex(vertex);
+        if (vertices.contains(vertexToDelete)) {
+            vertices.forEach(val -> {
+                if (val.getEdgesIn().containsKey(vertexToDelete)) val.removeEdgeIn(vertexToDelete);
+                if (val.getEdgesOut().containsKey(vertexToDelete)) val.removeEdgeOut(vertexToDelete);
+            });
+            vertices.remove(vertexToDelete);
+            return true;
+        }
+        return false;
     }
     
     @Override public Set<String> vertices() {
-        throw new RuntimeException("not implemented");
+        Set<String> verticesSet = new HashSet<>();
+        vertices.forEach(v -> verticesSet.add(v.getName()));
+        return verticesSet;
     }
     
     @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> sourcesMap = new HashMap<>();
+        findVertex(target).getEdgesIn().forEach((v,w) -> sourcesMap.put(v.getName(), w));
+        return sourcesMap;
     }
     
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> targetsMap = new HashMap<>();
+        findVertex(source).getEdgesOut().forEach((v,w) -> targetsMap.put(v.getName(), w));
+        return targetsMap;
     }
     
-    // TODO toString()
+    private Vertex<String> findVertex (String vertex){
+        for (Vertex <String> v:vertices) {
+            if (v.getName().contentEquals(vertex)) return v; 
+        }
+        return new Vertex <String> (vertex);
+
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder stringify = new StringBuilder();
+
+        vertices.forEach(source -> {
+            source.getEdgesOut().forEach((target, weight) -> {
+                stringify.append(source.toString() + "->" + target.toString() + "," + weight + "\n");
+            });
+        });
+        return stringify.toString().trim();
+    }
     
 }
 
@@ -64,23 +133,73 @@ public class ConcreteVerticesGraph implements Graph<String> {
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
  */
-class Vertex {
+class Vertex <L> {
     
-    // TODO fields
+    private final L name;
+    private final HashMap <Vertex<L>, Integer> edgesIn = new HashMap<>();
+    private final HashMap <Vertex<L>, Integer> edgesOut = new HashMap<>();
     
     // Abstraction function:
-    //   TODO
+    //   AF: Vertex is a node, with edges of weight greater than 0 going in and out of it
     // Representation invariant:
-    //   TODO
+    //   RI: Vertex cannot be an empty string, all edges must have weight > 0
     // Safety from rep exposure:
-    //   TODO
+    //   all fields are private final, defensive copies made for getter
     
     // TODO constructor
+    public Vertex (L name) {
+        this.name = name;
+        checkRep();        
+    }
     
     // TODO checkRep
+    private void checkRep() {
+        assert name!=null;
+        assert edgesIn.entrySet().stream().filter(key -> (key.getValue() <=0)).collect(Collectors.toList()).isEmpty();
+        assert edgesOut.entrySet().stream().filter(key -> (key.getValue() <=0)).collect(Collectors.toList()).isEmpty();
+        
+    }
     
     // TODO methods
+    public L getName() {
+        return name;
+    }
     
-    // TODO toString()
+    public HashMap<Vertex<L>, Integer> getEdgesIn() {
+        return new HashMap<Vertex<L>,Integer>(edgesIn);
+    }
+    
+    public HashMap<Vertex<L>, Integer> getEdgesOut() {
+        return new HashMap<Vertex<L>,Integer>(edgesOut);
+    }
+    
+    public Integer getWeight(Vertex<L> vertex) {
+        return edgesOut.get(vertex);
+    } 
+    
+    public void addEdgeOut(Vertex<L> vertex, int weight) {
+        edgesOut.put(vertex, weight);
+        checkRep();
+    }
+    
+    public void addEdgeIn(Vertex<L> vertex, int weight) {
+        edgesIn.put(vertex, weight);
+        checkRep();
+    }
+    
+    public void removeEdgeOut(Vertex<L> vertex) {
+        edgesOut.remove(vertex);
+        checkRep();
+    }
+    
+    public void removeEdgeIn(Vertex<L> vertex) {
+        edgesIn.remove(vertex);
+        checkRep();
+    }
+    
+    @Override
+    public String toString() {
+        return (String) name;
+    }
     
 }

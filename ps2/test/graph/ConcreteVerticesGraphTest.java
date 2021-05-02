@@ -30,7 +30,29 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     
     // Testing strategy for ConcreteVerticesGraph.toString()
     //   TODO
+    @Test
+    public void testToStringEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        assertEquals("Expected empty graph", graph.toString(), "" );
+        
+    }
+
+    @Test
+    public void testToStringVertexNoEdge() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        assertEquals("Vertex with no Edge return empty string", "", graph.toString());
+        
+    }
     
+    @Test
+    public void testToStringEdges() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B",10);
+        graph.set("C", "D", 15);
+        graph.add("E");
+        assertEquals("Multiple edges", "A->B,10\nC->D,15", graph.toString());
+    }
     // TODO tests for ConcreteVerticesGraph.toString()
     
     /*
@@ -41,5 +63,10 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     //   TODO
     
     // TODO tests for operations of Vertex
+    @Test
+    public void testToString() {
+        Vertex<String> v = new Vertex<String>("A");
+        assertEquals("Expected A", v.toString(), "A");
+    }
     
 }

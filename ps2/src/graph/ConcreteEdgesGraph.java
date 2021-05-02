@@ -33,7 +33,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     private void checkRep() {
-        assert vertices != null;
+        vertices.forEach(vertex-> {
+            assert vertex != null; 
+        });
         for (Edge<String> edge : edges) {
             assert edge.getWeigth() > 0;
         }
@@ -114,17 +116,6 @@ public class ConcreteEdgesGraph implements Graph<String> {
         for (Edge<String> edge: edges) {
             stringify.append(edge.toString() + "\n");
         }
-//        vertices.forEach((vertex) -> {
-//            if (edges.size()==0) {
-//                stringify.append(vertex + "\n");
-//            } else {
-//                edges.forEach(edge -> {
-//                    if (!edge.containsVertex(vertex)) {
-//                        stringify.append(vertex + "\n");
-//                    }
-//                });
-//            }
-//        });
         return stringify.toString().trim();
     }
     

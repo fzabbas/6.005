@@ -59,7 +59,7 @@ public abstract class GraphInstanceTest {
     public void testAddVertexInGraph() {
         Graph<String> graph = emptyInstance();
         graph.add("A");
-        assertFalse("expected vertex to be added", graph.add("A"));
+        assertFalse("expected vertex not to be added", graph.add("A"));
     }
     
     @Test
@@ -134,7 +134,7 @@ public abstract class GraphInstanceTest {
         graph.set("A", "B", 5);
         graph.set("A", "C", 10);
         assertTrue("Edge weight is the value of key",graph.targets("A").get("B")==5);
-        assertTrue("A contaisn 2 targets",graph.targets("A").size()==2);
+        assertEquals("A contains 2 targets", 2, graph.targets("A").size());
         assertFalse("Targets of B should not contain C",graph.targets("B").containsKey("C"));
     }
     
