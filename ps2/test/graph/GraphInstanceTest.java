@@ -105,7 +105,7 @@ public abstract class GraphInstanceTest {
         Graph<String> graph = emptyInstance();
         graph.add("A");
         assertTrue("Graph should not expected to change",graph.remove("A"));
-        assertTrue("Vertices should be empty",graph.vertices().contains("A"));
+        assertFalse("Vertices should be empty",graph.vertices().contains("A"));
     }
     
     @Test
@@ -148,6 +148,6 @@ public abstract class GraphInstanceTest {
     public void testVertices() {
         Graph<String> graph = emptyInstance();
         graph.add("A");
-        assertEquals("expected 1 vertex", 1, emptyInstance().vertices().size());
+        assertEquals("expected 1 vertex", 1, graph.vertices().size());
     }
 }

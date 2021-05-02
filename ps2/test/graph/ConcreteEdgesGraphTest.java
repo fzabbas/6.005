@@ -29,17 +29,63 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
      */
     
     // Testing strategy for ConcreteEdgesGraph.toString()
-    //   TODO
+    //   
     
-    // TODO tests for ConcreteEdgesGraph.toString()
+    @Test
+    public void testToStringEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        assertEquals("Expected empty graph", graph.toString(), "" );
+        
+    }
+
+    @Test
+    public void testToStringVertexNoEdge() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        assertEquals("Vertex with no Edge return empty string", "", graph.toString());
+        
+    }
+    
+    @Test
+    public void testToStringEdges() {
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B",10);
+        graph.set("C", "D", 15);
+        graph.add("E");
+        assertEquals("Multiple edges", "A->B,10\nC->D,15", graph.toString());
+    }
     
     /*
      * Testing Edge...
      */
     
     // Testing strategy for Edge
-    //   TODO
+    //   test getter functions and test toString
     
-    // TODO tests for operations of Edge
+    @Test
+    public void testGetter() {
+        Edge<String> edge = new Edge<String>("A", "B", 10);
+        assertEquals("Source of edge is A", edge.getSource(), "A");
+        assertEquals("Target of Edge in B", edge.getTarget(), "B");
+        assertEquals ("Weight of the edge is 10", edge.getWeigth(), 10);
+    }
+    
+    @Test
+    public void testToString() {
+        Edge<String> edge = new Edge<String>("A", "B", 10);
+        assertEquals("Expected A->B,10", edge.toString(), "A->B,10");
+    }
+    
+    @Test
+    public void testContainsVertex() {
+        Edge<String> edge = new Edge<String>("A", "B", 10);
+        assertTrue ("Expected to cnatin A", edge.containsVertex("A"));
+    }
+    
+    @Test
+    public void testDoesntContainsVertex() {
+        Edge<String> edge = new Edge<String>("A", "B", 10);
+        assertFalse ("Expected to cnatin A", edge.containsVertex("C"));
+    }
     
 }
