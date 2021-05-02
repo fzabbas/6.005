@@ -15,10 +15,11 @@ import java.util.stream.Collectors;
  * An implementation of Graph.
  * 
  * <p>PS2 instructions: you MUST use the provided rep.
+ * @param <L>
  */
-public class ConcreteVerticesGraph implements Graph<String> {
+public class ConcreteVerticesGraph<L> implements Graph<L> {
     
-    private final List<Vertex<String>> vertices = new ArrayList<>();
+    private final List<Vertex<L>> vertices = new ArrayList<>();
     
 
     // Abstraction function:
@@ -37,23 +38,23 @@ public class ConcreteVerticesGraph implements Graph<String> {
         vertices.forEach(vertex-> {
             assert vertex != null; 
         });
-        Set<Vertex<String>> verticesSet = new HashSet<>(vertices);
+        Set<Vertex<L>> verticesSet = new HashSet<>(vertices);
         assert vertices.size() == verticesSet.size();
     }
     
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
         checkRep();
         if (!(vertices.contains(findVertex(vertex)))) {
-            vertices.add(new Vertex <String> (vertex));
+            vertices.add(new Vertex <L> (vertex));
             return true;
         }         
         return false;
     
     }
     
-    @Override public int set(String source, String target, int weight) {
-        Vertex<String> sourceVertex = findVertex(source);
-        Vertex<String> targetVertex = findVertex(target);
+    @Override public int set(L source, L target, int weight) {
+        Vertex<L> sourceVertex = findVertex(source);
+        Vertex<L> targetVertex = findVertex(target);
         vertices.add(sourceVertex);
         vertices.add(targetVertex);
         if (!sourceVertex.getEdgesOut().containsKey(targetVertex)) {
@@ -72,8 +73,8 @@ public class ConcreteVerticesGraph implements Graph<String> {
         }
     }
     
-    @Override public boolean remove(String vertex) {
-        Vertex<String> vertexToDelete = findVertex(vertex);
+    @Override public boolean remove(L vertex) {
+        Vertex<L> vertexToDelete = findVertex(vertex);
         if (vertices.contains(vertexToDelete)) {
             vertices.forEach(val -> {
                 if (val.getEdgesIn().containsKey(vertexToDelete)) val.removeEdgeIn(vertexToDelete);
@@ -85,29 +86,29 @@ public class ConcreteVerticesGraph implements Graph<String> {
         return false;
     }
     
-    @Override public Set<String> vertices() {
-        Set<String> verticesSet = new HashSet<>();
+    @Override public Set<L> vertices() {
+        Set<L> verticesSet = new HashSet<>();
         vertices.forEach(v -> verticesSet.add(v.getName()));
         return verticesSet;
     }
     
-    @Override public Map<String, Integer> sources(String target) {
-        Map<String, Integer> sourcesMap = new HashMap<>();
+    @Override public Map<L, Integer> sources(L target) {
+        Map<L, Integer> sourcesMap = new HashMap<>();
         findVertex(target).getEdgesIn().forEach((v,w) -> sourcesMap.put(v.getName(), w));
         return sourcesMap;
     }
     
-    @Override public Map<String, Integer> targets(String source) {
-        Map<String, Integer> targetsMap = new HashMap<>();
+    @Override public Map<L, Integer> targets(L source) {
+        Map<L, Integer> targetsMap = new HashMap<>();
         findVertex(source).getEdgesOut().forEach((v,w) -> targetsMap.put(v.getName(), w));
         return targetsMap;
     }
     
-    private Vertex<String> findVertex (String vertex){
-        for (Vertex <String> v:vertices) {
-            if (v.getName().contentEquals(vertex)) return v; 
+    private Vertex<L> findVertex (L vertex){
+        for (Vertex <L> v:vertices) {
+            if (v.getName().equals(vertex)) return v; 
         }
-        return new Vertex <String> (vertex);
+        return new Vertex <L> (vertex);
 
     }
     

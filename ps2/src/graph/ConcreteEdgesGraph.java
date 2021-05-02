@@ -15,10 +15,10 @@ import java.util.Set;
  * 
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteEdgesGraph implements Graph<String> {
+public class ConcreteEdgesGraph <L> implements Graph<L> {
     
-    private final Set<String> vertices = new HashSet<>();
-    private final List<Edge> edges = new ArrayList<>();
+    private final Set<L> vertices = new HashSet<>();
+    private final List<Edge<L>> edges = new ArrayList<>();
     
     // Abstraction function:
     //   A directed graph containing vertices, connected by edges of given weight
@@ -36,42 +36,42 @@ public class ConcreteEdgesGraph implements Graph<String> {
         vertices.forEach(vertex-> {
             assert vertex != null; 
         });
-        for (Edge<String> edge : edges) {
-            assert edge.getWeigth() > 0;
+        for (Edge<L> edge : edges) {
+            assert (edge).getWeigth() > 0;
         }
     }
     
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
         boolean result = vertices.add(vertex);
         checkRep();
         return result;
     }
     
-    @Override public int set(String source, String target, int weight) {
+    @Override public int set(L source, L target, int weight) {
         checkRep();
-        for (Edge edge:edges) {
-            if (edge.getSource()==source && edge.getTarget()==target) {
-                int oldWeight = edge.getWeigth();
+        for (Edge<L> edge:edges) {
+            if ((edge).getSource()==source && (edge).getTarget()==target) {
+                int oldWeight = (edge).getWeigth();
                 if (weight==0) {
                     edges.remove(edge);
                 } else {
                     edges.remove(edge);
-                    edges.add(new Edge (source, target,weight));
+                    edges.add(new Edge<L> (source, target,weight));
                 }
                 return oldWeight;
             }     
         }
-         edges.add(new Edge (source, target, weight));
+         edges.add(new Edge <L> (source, target, weight));
          vertices.add(source);
          vertices.add(target);
          return 0;
     }
     
-    @Override public boolean remove(String vertex) {
+    @Override public boolean remove(L vertex) {
         checkRep();
         if (vertices.contains(vertex)) {
            vertices.remove(vertex);
-           List<Edge> toRemove = new ArrayList<>();
+           List<Edge<L>> toRemove = new ArrayList<>();
            edges.forEach(edge -> {
                if (edge.getSource()==vertex || edge.getTarget()==vertex) {
                    toRemove.add(edge);
@@ -84,27 +84,27 @@ public class ConcreteEdgesGraph implements Graph<String> {
         }
     }
     
-    @Override public Set<String> vertices() {
+    @Override public Set<L> vertices() {
         return new HashSet<>(vertices);
     }
     
-    @Override public Map<String, Integer> sources(String target) {
+    @Override public Map<L, Integer> sources(L target) {
         checkRep();
-        Map<String, Integer> sourceMap = new HashMap<>();
+        Map<L, Integer> sourceMap = new HashMap<>();
         edges.forEach(edge -> {
             if (edge.getTarget()==target) {
-                sourceMap.put((String)edge.getSource(), edge.getWeigth());
+                sourceMap.put(edge.getSource(), edge.getWeigth());
             }
         });
         return sourceMap;
     }
     
-    @Override public Map<String, Integer> targets(String source) {
+    @Override public Map<L, Integer> targets(L source) {
         checkRep();
-        Map<String, Integer> targetMap = new HashMap<>();
+        Map<L, Integer> targetMap = new HashMap<>();
         edges.forEach(edge -> {
             if (edge.getSource()==source) {
-                targetMap.put((String) edge.getTarget(), edge.getWeigth()); 
+                targetMap.put(edge.getTarget(), edge.getWeigth()); 
             }
         });
         return targetMap;
@@ -113,7 +113,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     @Override
     public String toString() {
         StringBuilder stringify = new StringBuilder();
-        for (Edge<String> edge: edges) {
+        for (Edge<L> edge: edges) {
             stringify.append(edge.toString() + "\n");
         }
         return stringify.toString().trim();
@@ -154,7 +154,7 @@ class Edge <L> {
         assert target != null;
         assert weight >= 0;
     }
-    L getSource() {
+    public L getSource() {
         return source;
     }
     
