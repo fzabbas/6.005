@@ -3,9 +3,22 @@
  */
 package poet;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
+//import graph.Edge;
 import graph.Graph;
 
 /**
@@ -55,9 +68,9 @@ public class GraphPoet {
     private final Graph<String> graph = Graph.empty();
     
     // Abstraction function:
-    //   TODO
+    //   AF : A graph based poem generated from weighted graph, inserts word in between two words
     // Representation invariant:
-    //   TODO
+    //   RI : graph is not empty
     // Safety from rep exposure:
     //   TODO
     
@@ -68,10 +81,29 @@ public class GraphPoet {
      * @throws IOException if the corpus file cannot be found or read
      */
     public GraphPoet(File corpus) throws IOException {
-        throw new RuntimeException("not implemented");
+        List<String> wordList = new ArrayList<>();
+        Scanner s = new Scanner(new BufferedReader(new FileReader(corpus)));
+        while (s.hasNext()) {
+          wordList.add(s.next());
+        }
+        s.close();
+        
+        wordList.forEach(word -> graph.add(word.toLowerCase()));
+        for (int i = 0; i < wordList.size() -1 ; i++) {
+            Map<String, Integer> source = graph.targets(wordList.get(i));
+            String target = wordList.get(i+1);
+            if (source.containsKey(target)){
+                graph.set(wordList.get(i).toLowerCase(), target.toLowerCase(), source.get(target)+1);
+            } else {
+                graph.set(wordList.get(i).toLowerCase(), target.toLowerCase(), 1);
+            }
+        }
+        checkRep();
     }
     
-    // TODO checkRep
+    public void checkRep() {
+        assert graph.vertices()!=null;
+    }
     
     /**
      * Generate a poem.
@@ -80,9 +112,29 @@ public class GraphPoet {
      * @return poem (as described above)
      */
     public String poem(String input) {
-        throw new RuntimeException("not implemented");
+        List<String> inputList = Arrays.asList(input.trim().split("\\s+"));
+        StringBuilder output = new StringBuilder();
+
+        for (int i=0; i < inputList.size()-1; i++ ) {
+            output.append(inputList.get(i)+" ");
+            
+            Map <String, Integer> bridgeWords = new HashMap <>();
+            int j = i+1;
+            graph.targets(inputList.get(i).toLowerCase()).forEach((k, v) -> {
+                if (graph.sources(inputList.get(j).toLowerCase()).containsKey(k.toLowerCase())) {
+                    bridgeWords.put(k,v);
+                };
+            });
+            if (!bridgeWords.isEmpty()) {
+                output.append(Collections.max(bridgeWords.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey() + " ");
+            }            
+        }
+        output.append(inputList.get((inputList.size() -1)));
+        return output.toString();
     }
     
-    // TODO toString()
+    @Override public String toString() {
+        return graph.toString();
+    }
     
 }

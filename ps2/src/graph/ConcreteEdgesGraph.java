@@ -92,7 +92,7 @@ public class ConcreteEdgesGraph <L> implements Graph<L> {
         checkRep();
         Map<L, Integer> sourceMap = new HashMap<>();
         edges.forEach(edge -> {
-            if (edge.getTarget()==target) {
+            if (edge.getTarget().equals(target)) {
                 sourceMap.put(edge.getSource(), edge.getWeigth());
             }
         });
@@ -103,7 +103,7 @@ public class ConcreteEdgesGraph <L> implements Graph<L> {
         checkRep();
         Map<L, Integer> targetMap = new HashMap<>();
         edges.forEach(edge -> {
-            if (edge.getSource()==source) {
+            if (edge.getSource().equals(source)) {
                 targetMap.put(edge.getTarget(), edge.getWeigth()); 
             }
         });
