@@ -1,7 +1,7 @@
 package expressivo;
 
 class Plus implements Expression {
-    private final Number left, right;
+    private final Expression left, right;
     
     // Abstraction function
     //    represents the sum of two expressions left+right
@@ -10,7 +10,7 @@ class Plus implements Expression {
     // Safety from rep exposure
     //    all fields are immutable and final
     
-    public Plus (Number left, Number right) {
+    public Plus (Expression left, Expression right) {
         this.left = left;
         this.right = right;
     }
@@ -29,17 +29,21 @@ class Plus implements Expression {
     @Override public String toString() {
         return "("+left+")+("+right+")";
     }
-
     
     @Override
     public boolean equals(Object thatObject) {
-        if (!(thatObject instanceof Multiply)) {
+        if (!(thatObject instanceof Plus)) {
             return false;
         }
         Plus that = (Plus) thatObject;
         checkRep();
         return this.left.equals(that.left) && this.right.equals(that.right);
     }
+    
+    @Override
+    public int hashCode() {
+        return left.hashCode()+ right.hashCode();
+        }
 
 
     @Override

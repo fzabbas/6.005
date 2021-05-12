@@ -24,6 +24,20 @@ class Number implements Expression {
     }
 
     @Override
+    public boolean equals(Object thatObject) {
+        if (!(thatObject instanceof Number)) {
+            return false;
+        }
+        Number that = (Number) thatObject;
+        return this.value() == that.value();
+    }
+    
+    @Override
+    public int hashCode() {
+        return Integer.valueOf(n).hashCode();
+        }
+    
+    @Override
     public Expression simplify() {
         return null;
     }
