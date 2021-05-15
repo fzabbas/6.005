@@ -1,7 +1,7 @@
 package expressivo;
 
-class Number implements Expression {
-    private final int n;
+public class Number implements Expression {
+    private final Double n;
     
     // Abstraction function
     //    represents the integer n
@@ -11,11 +11,11 @@ class Number implements Expression {
     //    all fields are immutable and final
     
     /** Make a Number. */
-    public Number(int n) {
+    public Number(Double n) {
         this.n = n;
     }
     
-    @Override public int value() {
+    @Override public Double value() {
         return n;
     }
     
@@ -29,12 +29,13 @@ class Number implements Expression {
             return false;
         }
         Number that = (Number) thatObject;
-        return this.value() == that.value();
+
+        return Double.compare(this.value(), that.value()) == 0;
     }
     
     @Override
     public int hashCode() {
-        return Integer.valueOf(n).hashCode();
+        return this.n.hashCode();
         }
     
     @Override
@@ -42,9 +43,11 @@ class Number implements Expression {
         return null;
     }
 
+
+
     @Override
-    public Expression derive() {
-        return null;
+    public Expression derive(String var) {
+        return new Number(0.0);
     }
 
 }

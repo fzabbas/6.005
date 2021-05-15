@@ -22,29 +22,29 @@ public class ExpressionTest {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
     
-    Number num1 = new Number(1);
-    Number num2 = new Number(1);
-    Number num3 = new Number(2);
+    Number num1 = new Number((double) 1);
+    Number num2 = new Number((double)1);
+    Number num3 = new Number((double)2);
     Variable var1 = new Variable ("x");
     Variable var2 = new Variable ("x");
     Variable var3 = new Variable ("y");
-    Plus sum1 = new Plus(new Number(3), new Number(4));
-    Plus sum2 = new Plus(new Number(3), new Number( 4));
-    Plus sum3 = new Plus(new Number(4), new Number(3));
-    Multiply prod1 = new Multiply(new Number(3), new Number(4));
-    Multiply prod2 = new Multiply(new Number(3), new Number(4));
-    Multiply prod3 = new Multiply(new Number(4), new Number(3));
-    Multiply prod4 = new Multiply(new Variable("x"), new Number(3));
+    Plus sum1 = new Plus(new Number((double)3), new Number((double)4));
+    Plus sum2 = new Plus(new Number((double)3), new Number((double) 4));
+    Plus sum3 = new Plus(new Number((double)4), new Number((double)3));
+    Multiply prod1 = new Multiply(new Number((double)3), new Number((double)4));
+    Multiply prod2 = new Multiply(new Number((double)3), new Number((double)4));
+    Multiply prod3 = new Multiply(new Number((double)4), new Number((double)3));
+    Multiply prod4 = new Multiply(new Variable("x"), new Number((double)3));
 
 
     
     @Test
     public  void testToString() {
         
-        assertEquals("Expected string:", "1", num1.toString());
+        assertEquals("Expected string:", "1.0", num1.toString());
         assertEquals("Expected string:", "x", var1.toString());
-        assertEquals("Expected string:", "(3)+(4)", sum1.toString());
-        assertEquals("Expected string:", "(x)x(3)", prod4.toString());
+        assertEquals("Expected string:", "(3.0)+(4.0)", sum1.toString());
+        assertEquals("Expected string:", "(x)x(3.0)", prod4.toString());
     }
     
     @Test
@@ -68,6 +68,33 @@ public class ExpressionTest {
         assertTrue("Expected 3x4 and 3x 4 to be equal", prod1.hashCode() == (prod2).hashCode());
 
     }
-    // TODO tests for Expression
+
+    @Test
+    public void testParse() {
+        Expression expectedResult = new Plus(new Number((double)2), new Variable("y"));
+        assertEquals("Expected Expresion Plus (2+y) ", expectedResult.toString(), Expression.parse("2+y ").toString() );
+        Expression expectedResult2 = new Plus(new Number((double)2), new Variable("y "));
+        assertEquals("Expected Expresion Space Insensitive ", expectedResult2.toString(), Expression.parse("2+y ").toString() );
+        Expression expectedResult3 = new Multiply(new Number((double)2), new Variable("y "));
+        assertEquals("Expected Expresion Product", expectedResult3.toString(), Expression.parse("2*y").toString() );
+    }
     
+    @Test
+    public void testDerive() {
+        Expression f = new Variable(("u")) ;
+        Expression n = new Number(1.2);
+        Expression mult = new Multiply(new Variable("x"), new Variable("x"));
+        Expression multResult = new Multiply(new Number(2.0), new Variable("x"));
+        Expression plus = new Plus(new Variable("x"), new Variable("x"));
+        Expression plusResult = new Plus(new Number(1.0), new Number(1.0));
+
+        assertEquals("Expected reuslt 1", "1.0", f.derive("u").toString());
+        assertEquals("Expected reuslt 0 for constant", "0.0", n.derive("u").toString());
+        assertEquals("Expected reuslt 2x for constant", multResult, mult.derive("x"));
+        assertEquals("Expected reuslt 2x for constant", plusResult, plus.derive("x"));
+
+
+    }
+
+
 }

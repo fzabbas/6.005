@@ -17,11 +17,12 @@ public class Variable implements Expression {
     
     /** Make a Variable. */
     public Variable(String x) {
-        this.x = x;
+        
+        this.x = x.trim();
     }
 
     @Override
-    public int value() {
+    public Double value() {
         throw new AssertionError("Variable does not have value");
     }
 
@@ -31,11 +32,6 @@ public class Variable implements Expression {
         return null;
     }
 
-    @Override
-    public Expression derive() {
-        // TODO Auto-generated method stub
-        return null;
-    }
     @Override 
     public String toString() {
         return this.x;
@@ -55,5 +51,15 @@ public class Variable implements Expression {
     public int hashCode() {
         return x.hashCode();
         }
+    
+
+    @Override
+    public Expression derive(String var) {
+        if (var.contentEquals(this.x)) {
+            return new Number(1.0);
+        } else {
+            throw new RuntimeException("Invalid variable");
+        }
+    }
 
 }

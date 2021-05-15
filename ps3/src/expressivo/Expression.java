@@ -3,6 +3,20 @@
  */
 package expressivo;
 
+import org.antlr.v4.gui.Trees;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import expressivo.parser.ExpressionLexer;
+import expressivo.parser.ExpressionParser;
+import expressivo.parser.MakeExpression2;
+//import expressivo.parser.MakeExpression;
+
 /**
  * An immutable data type representing a polynomial expression of:
  *   + and *
@@ -26,8 +40,36 @@ public interface Expression {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static Expression parse(String input) {
-        throw new RuntimeException("unimplemented");
+        CharStream stream = new ANTLRInputStream(input);
+        ExpressionParser parser = makeParser(stream);
+        
+        ParseTree tree = parser.root();
+        System.err.println(tree.toStringTree(parser));
+        Trees.inspect(tree, parser);
+//        new ParseTreeWalker().walk(new PrintEverything(), tree);
+        
+        MakeExpression2 exprMaker = new MakeExpression2();
+        new ParseTreeWalker().walk((ParseTreeListener) exprMaker, tree);
+        return exprMaker.getExpression();
+//        throw new RuntimeException("unimplemented");
     }
+    
+
+    public static ExpressionParser makeParser(CharStream input) {
+//        CharStream stream = new ANTLRInputStream(input);
+        ExpressionLexer lexer = new ExpressionLexer(input);
+        TokenStream tokens = new CommonTokenStream(lexer);
+        ExpressionParser parser = new ExpressionParser(tokens);
+        parser.reportErrorsAsExceptions();
+        
+        return parser;
+//        ParseTree tree = parser.root();
+//        System.err.println(tree.toStringTree(parser));
+//        Trees.inspect(tree, parser);
+//        
+//        throw new RuntimeException("unimplemented");
+    }
+    
     
     /**
      * @return a parsable representation of this expression, such that
@@ -45,6 +87,15 @@ public interface Expression {
     public boolean equals(Object thatObject);
     
     /**
+     * Differentiate an expression with respect to a variable.
+     * @param String the derive with, a case-sensitive nonempty string of letters
+     * @return a new expression derived by var 
+     */
+    
+    public Expression derive(String var);
+
+    
+    /**
      * @return hash code value consistent with the equals() definition of structural
      * equality, such that for all e1,e2:Expression,
      *     e1.equals(e2) implies e1.hashCode() == e2.hashCode()
@@ -52,12 +103,10 @@ public interface Expression {
     @Override
     public int hashCode();
     
-    public int value();
+    public Double value();
 
     public Expression simplify();
     
-    public Expression derive();
-
     
     // TODO more instance methods
     

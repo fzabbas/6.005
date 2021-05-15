@@ -20,12 +20,12 @@ public class Multiply implements Expression {
         assert right != null;
     }
     
-    @Override public int value() {
+    @Override public Double value() {
         return left.value() * right.value();
     }
     
     @Override public String toString() {
-        return "("+left+")x("+right+")";
+        return "("+left+")*("+right+")";
     }
     
     @Override
@@ -50,9 +50,10 @@ public class Multiply implements Expression {
     }
 
     @Override
-    public Expression derive() {
-        // TODO Auto-generated method stub
-        return null;
+    public Expression derive(String var) {
+        Expression prod1 = new Multiply (this.left, this.right.derive(var));
+        Expression prod2 = new Multiply (this.right, this.left.derive(var));
+        return new Plus (prod1, prod2);
     }
     
 }

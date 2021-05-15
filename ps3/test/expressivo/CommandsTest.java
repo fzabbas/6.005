@@ -20,6 +20,17 @@ public class CommandsTest {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
     
+    @Test
+    public void testDifferentiate() {
+        assertEquals("Expected reuslt 1", "1.0", Commands.differentiate("u", "u"));
+        assertEquals("Expected reuslt 0", "0.0", Commands.differentiate("9", "u"));
+        assertEquals("Expected reuslt 1", new Multiply(new Number(2.0), new Variable("u")), Commands.differentiate("u*u", "u"));
+        assertEquals("Expected reuslt 1", new Plus(new Number(1.0), new Number(1.0)).toString(), Commands.differentiate("u+u", "u"));
+
+
+        
+    }
+    
     
     // TODO tests for Commands.differentiate() and Commands.simplify()
     

@@ -1,6 +1,6 @@
 package expressivo;
 
-class Plus implements Expression {
+public class Plus implements Expression {
     private final Expression left, right;
     
     // Abstraction function
@@ -21,7 +21,7 @@ class Plus implements Expression {
         assert right != null;
     }
     
-    @Override public int value() {
+    @Override public Double value() {
         return left.value() + right.value();
     }
     
@@ -52,11 +52,9 @@ class Plus implements Expression {
         return null;
     }
 
-
     @Override
-    public Expression derive() {
-        // TODO Auto-generated method stub
-        return null;
+    public Expression derive(String var) {
+        return new Plus(this.left.derive(var), this.right.derive(var));
     }
     
 }
