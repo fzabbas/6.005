@@ -26,7 +26,6 @@ public class Commands {
     public static String differentiate(String expression, String variable) {
         Expression expr = Expression.parse(expression);
         return expr.derive(variable).toString();
-
     }
     
     /**
@@ -42,7 +41,8 @@ public class Commands {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static String simplify(String expression, Map<String,Double> environment) {
-        throw new RuntimeException("unimplemented");
+        Expression expr = Expression.parse(expression);
+        return expr.simplify(environment).toString();
     }
-    
+
 }

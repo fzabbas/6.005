@@ -5,6 +5,9 @@ package expressivo;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 /**
@@ -44,7 +47,7 @@ public class ExpressionTest {
         assertEquals("Expected string:", "1.0", num1.toString());
         assertEquals("Expected string:", "x", var1.toString());
         assertEquals("Expected string:", "(3.0)+(4.0)", sum1.toString());
-        assertEquals("Expected string:", "(x)x(3.0)", prod4.toString());
+        assertEquals("Expected string:", "(x)*(3.0)", prod4.toString());
     }
     
     @Test
@@ -87,12 +90,29 @@ public class ExpressionTest {
         Expression multResult = new Multiply(new Number(2.0), new Variable("x"));
         Expression plus = new Plus(new Variable("x"), new Variable("x"));
         Expression plusResult = new Plus(new Number(1.0), new Number(1.0));
+        Expression mult2 = new Multiply(new Variable("x"), new Number(2.0));
 
         assertEquals("Expected reuslt 1", "1.0", f.derive("u").toString());
         assertEquals("Expected reuslt 0 for constant", "0.0", n.derive("u").toString());
         assertEquals("Expected reuslt 2x for constant", multResult, mult.derive("x"));
         assertEquals("Expected reuslt 2x for constant", plusResult, plus.derive("x"));
+        assertEquals("Expected reuslt 2x for constant", new Number(2.0), mult2.derive("x"));
 
+    }
+    
+    @Test
+    public void testSimplify() {
+        Expression var = new Variable ("u");
+        Expression n = new Number(1.2);
+        Expression mult = new Multiply(new Variable("u"), new Variable("u"));
+        Expression sum = new Plus(new Variable("u"), new Variable("u"));
+
+        Map<String, Double> map = new HashMap<String, Double>();
+        map.put("u", 3.0);
+        assertEquals("Expected u to be substitutes to 2", new Number(3.0), var.simplify(map));
+        assertEquals("Expected no change", n, n.simplify(map));
+        assertEquals("Expected expr to simplify to 9", new Number(9.0), mult.simplify(map));
+        assertEquals("Expected expr to simplify to 6", new Number(6.0), sum.simplify(map));
 
     }
 

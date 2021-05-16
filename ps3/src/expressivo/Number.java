@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 public class Number implements Expression {
     private final Double n;
     
@@ -37,17 +39,21 @@ public class Number implements Expression {
     public int hashCode() {
         return this.n.hashCode();
         }
-    
-    @Override
-    public Expression simplify() {
-        return null;
-    }
-
-
 
     @Override
     public Expression derive(String var) {
         return new Number(0.0);
+    }
+
+    @Override
+    public Expression simplify(Map<String, Double> val) {
+        return new Number(this.n);
+    }
+
+    @Override
+    public boolean isNum() {
+        // TODO Auto-generated method stub
+        return true;
     }
 
 }

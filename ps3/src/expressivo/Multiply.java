@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 public class Multiply implements Expression {
     private final Expression left, right;
     
@@ -44,16 +46,26 @@ public class Multiply implements Expression {
         }
 
     @Override
-    public Expression simplify() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Expression derive(String var) {
         Expression prod1 = new Multiply (this.left, this.right.derive(var));
         Expression prod2 = new Multiply (this.right, this.left.derive(var));
         return new Plus (prod1, prod2);
+    }
+
+    @Override
+    public Expression simplify(Map<String, Double> val) {
+        if (this.left.isNum() && this.right.isNum()) {
+            Double num = this.left.value() * this.right.value();
+            return new Number(num);
+        } else {
+        return new Multiply(this.left.simplify(val),this.right.simplify(val)).simplify(val);
+        }
+    }
+
+    @Override
+    public boolean isNum() {
+        // TODO Auto-generated method stub
+        return false;
     }
     
 }

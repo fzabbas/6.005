@@ -3,6 +3,8 @@
  */
 package expressivo;
 
+import java.util.Map;
+
 import org.antlr.v4.gui.Trees;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -105,7 +107,9 @@ public interface Expression {
     
     public Double value();
 
-    public Expression simplify();
+    public Expression simplify(Map<String, Double> val);
+    
+    public boolean isNum();
     
     
     // TODO more instance methods
