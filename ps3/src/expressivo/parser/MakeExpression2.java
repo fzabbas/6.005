@@ -122,7 +122,7 @@ public class MakeExpression2 implements ExpressionListener {
     @Override
     public void exitPrimitive(PrimitiveContext ctx) {
         if (ctx.NUMBER() != null) {
-            double n = Integer.valueOf(ctx.NUMBER().getText());
+            double n = Double.valueOf(ctx.NUMBER().getText());
             Expression num = new Number(n);
             stack.push(num);
             
