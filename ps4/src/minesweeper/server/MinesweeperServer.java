@@ -28,6 +28,7 @@ public class MinesweeperServer {
     private final ServerSocket serverSocket;
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
+    private final Board board;
 
     // TODO: Abstraction function, rep invariant, rep exposure
 
@@ -38,9 +39,10 @@ public class MinesweeperServer {
      * @param debug debug mode flag
      * @throws IOException if an error occurs opening the server socket
      */
-    public MinesweeperServer(int port, boolean debug) throws IOException {
+    public MinesweeperServer(int port, boolean debug, Board board) throws IOException {
         serverSocket = new ServerSocket(port);
         this.debug = debug;
+        this.board = board;
     }
 
     /**
@@ -54,15 +56,19 @@ public class MinesweeperServer {
         while (true) {
             // block until a client connects
             Socket socket = serverSocket.accept();
-
-            // handle the client
-            try {
-                handleConnection(socket);
-            } catch (IOException ioe) {
-                ioe.printStackTrace(); // but don't terminate serve()
-            } finally {
-                socket.close();
-            }
+            System.out.println("got a new connection");
+            // start a new thread for each client 
+            new Thread(() -> {
+                try {
+                    try {
+                        handleConnection(socket);
+                    } finally {
+                        socket.close();
+                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace(); // but don't terminate serve()
+                }
+            }).start();
         }
     }
 
@@ -100,31 +106,25 @@ public class MinesweeperServer {
         String regex = "(look)|(help)|(bye)|"
                      + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
         if ( ! input.matches(regex)) {
-            // invalid input
-            // TODO Problem 5
+            return "invalid input; enter 'help' if confused";
+
         }
         String[] tokens = input.split(" ");
         if (tokens[0].equals("look")) {
-            // 'look' request
-            // TODO Problem 5
+            return board.toString();
         } else if (tokens[0].equals("help")) {
-            // 'help' request
-            // TODO Problem 5
+            return board.help();
         } else if (tokens[0].equals("bye")) {
-            // 'bye' request
-            // TODO Problem 5
+            return board.bye();
         } else {
             int x = Integer.parseInt(tokens[1]);
             int y = Integer.parseInt(tokens[2]);
             if (tokens[0].equals("dig")) {
-                // 'dig x y' request
-                // TODO Problem 5
+                return board.dig(x, y);
             } else if (tokens[0].equals("flag")) {
-                // 'flag x y' request
-                // TODO Problem 5
+                return board.flag(x, y);
             } else if (tokens[0].equals("deflag")) {
-                // 'deflag x y' request
-                // TODO Problem 5
+                return board.deflag(x, y);
             }
         }
         // TODO: Should never get here, make sure to return in each of the cases above
@@ -246,10 +246,19 @@ public class MinesweeperServer {
      * @throws IOException if a network error occurs
      */
     public static void runMinesweeperServer(boolean debug, Optional<File> file, int sizeX, int sizeY, int port) throws IOException {
+        Board board;
+        if (file.isPresent()) {
+            board = new Board(file.get());
+        } else {
+            if (sizeX>0 && sizeY>0) {
+                board = new Board(sizeX, sizeY, 0.2);
+            } else {
+                throw new RuntimeException("cannot initate board with size less than 0");
+            }
+        }
+        port = 4576;
         
-        // TODO: Continue implementation here in problem 4
-        
-        MinesweeperServer server = new MinesweeperServer(port, debug);
+        MinesweeperServer server = new MinesweeperServer(port, debug, board);
         server.serve();
     }
 }
