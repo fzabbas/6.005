@@ -21,7 +21,7 @@ public class Square {
     //state is initilly UNTOUCHED, can be changed to DUG or FLAGGED
     public void setState(String state) {
         if (state=="DUG") {
-            this.isBomb=false;
+//            this.isBomb=false;
             this.state=state;
         } else {
             this.state=state;
@@ -30,6 +30,10 @@ public class Square {
 
     public boolean isBomb() {
         return this.isBomb;
+    }
+    
+    public void notBomb() {
+        this.isBomb=false;
     }
 
     public int getX() {

@@ -29,6 +29,8 @@ public class MinesweeperServer {
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
     private final Board board;
+    private final Object playerLock = new Object();
+    private int playerCount;
 
     // TODO: Abstraction function, rep invariant, rep exposure
 
@@ -43,6 +45,7 @@ public class MinesweeperServer {
         serverSocket = new ServerSocket(port);
         this.debug = debug;
         this.board = board;
+        this.playerCount = 0;
     }
 
     /**
@@ -61,6 +64,7 @@ public class MinesweeperServer {
             new Thread(() -> {
                 try {
                     try {
+                        
                         handleConnection(socket);
                     } finally {
                         socket.close();
@@ -81,8 +85,15 @@ public class MinesweeperServer {
     private void handleConnection(Socket socket) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        
+        synchronized(playerLock) {
+            playerCount += 1;
+        }
+        String hello = "Welcome to Multiplayer Minesweeper, Board contains " + board.getWidth() + " columns and " + board.getHeight()+ " rows. \n The game contains " + playerCount + " players";
+        out.println(hello);
 
         try {
+
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 String output = handleRequest(line);
                 if (output != null) {
@@ -90,9 +101,15 @@ public class MinesweeperServer {
                     out.println(output);
                 }
             }
+        } catch (EndGameException e) {
+            out.println("BOOM");
+            System.out.println("Closing connection");
         } finally {
             out.close();
             in.close();
+            synchronized(playerLock) {
+                playerCount -= 1;
+            }
         }
     }
 
@@ -101,8 +118,9 @@ public class MinesweeperServer {
      * 
      * @param input message from client
      * @return message to client, or null if none
+     * @throws EndGameException 
      */
-    private String handleRequest(String input) {
+    private String handleRequest(String input) throws EndGameException {
         String regex = "(look)|(help)|(bye)|"
                      + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
         if ( ! input.matches(regex)) {
@@ -115,12 +133,22 @@ public class MinesweeperServer {
         } else if (tokens[0].equals("help")) {
             return board.help();
         } else if (tokens[0].equals("bye")) {
-            return board.bye();
+            board.bye();
+            throw new EndGameException();
         } else {
             int x = Integer.parseInt(tokens[1]);
             int y = Integer.parseInt(tokens[2]);
             if (tokens[0].equals("dig")) {
-                return board.dig(x, y);
+                boolean isBomb = board.dig(x, y);
+                if (isBomb==true){
+                    if (this.debug) {
+                        return board.toString();
+                    } else {
+                    throw new EndGameException();
+                    }
+                } else {
+                    return board.toString();
+                }
             } else if (tokens[0].equals("flag")) {
                 return board.flag(x, y);
             } else if (tokens[0].equals("deflag")) {

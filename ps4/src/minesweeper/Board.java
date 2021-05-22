@@ -84,20 +84,22 @@ public class Board {
         assert this.height > 0;
     }
     
-    private int getHeight() {
+    public int getHeight() {
         return this.height;
     }
     
-    private int getWidth() {
+    public int getWidth() {
         return this.width;
     }
     
-    synchronized public String dig(int x, int y) {
+    synchronized public boolean dig(int x, int y) {
         checkRep();
         if (this.grid[x][y].getState()=="UNTOUCHED") {
             this.grid[x][y].setState("DUG");
             if (this.grid[x][y].isBomb()) {
-                return "BOOM"; //boom message?
+                System.out.println("ITS A BOMB");
+                this.grid[x][y].notBomb();
+                return true; //boom message?
                 //end game           
             }
             if (adjacentBombs(x,y)==0) {
@@ -107,7 +109,7 @@ public class Board {
             }
         }
         
-        return this.toString();
+        return false;
     }
     
     synchronized public String flag(int x, int y) {
@@ -191,6 +193,10 @@ public class Board {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public String boomMessage() {
+        return "BOOM";
     }
 }
 
