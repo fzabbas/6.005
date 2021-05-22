@@ -44,7 +44,8 @@ public class Board {
     
     public Board(File file) throws IOException {
         List<String> allLines = Files.readAllLines(file.toPath());
-        if (!(allLines.get(0).matches("[0-9]+ [0-9]+"))) {
+//        System.out.println(allLines);
+        if (!(allLines.get(0).matches("([0-9]+ )[0-9]+"))) {
             throw new RuntimeException("First line is wrong format");
         }
 
@@ -61,7 +62,8 @@ public class Board {
         }
         
         allLines.forEach(line-> {
-           if (!(line.matches("((0|1 ))*(0|1)"))) {
+           System.out.println(line); 
+           if (!(line.matches("((0|1) )*(0|1)"))) {
                throw new RuntimeException ("expect only 0 or 1");
            }
            if (line.split(" ").length!=x) {
@@ -94,18 +96,20 @@ public class Board {
     
     synchronized public boolean dig(int x, int y) {
         checkRep();
-        if (this.grid[x][y].getState()=="UNTOUCHED") {
-            this.grid[x][y].setState("DUG");
-            if (this.grid[x][y].isBomb()) {
-                System.out.println("ITS A BOMB");
-                this.grid[x][y].notBomb();
-                return true; //boom message?
+        if (x<=this.getWidth() && y <= this.getHeight()) {
+            if (this.grid[x][y].getState()=="UNTOUCHED") {
+                this.grid[x][y].setState("DUG");
+                if (this.grid[x][y].isBomb()) {
+                    System.out.println("ITS A BOMB");
+                    this.grid[x][y].notBomb();
+                    return true; //boom message?
                 //end game           
-            }
-            if (adjacentBombs(x,y)==0) {
-                adjacentSquares(x,y).forEach((square)->{
-                    dig(square.getX(), square.getY());
-                });
+                }
+                if (adjacentBombs(x,y)==0) {
+                    adjacentSquares(x,y).forEach((square)->{
+                        dig(square.getX(), square.getY());
+                    });
+                }
             }
         }
         
