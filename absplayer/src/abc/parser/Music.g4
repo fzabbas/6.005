@@ -1,29 +1,7 @@
-/*
- * Compile all your grammars using
- *       java -jar ../../../lib/antlr.jar *.g4
- * then Refresh in Eclipse.
- */
-grammar Abc;
+grammar Music;
 import Configuration;
 
-
-root: header music EOF;
-
-
-
-header: index comment* title otherfields* key;
-index: 'X:' DIGIT+ endline;
-title: 'T:' TEXT+ endline;
-otherfields: composer | length | meter | tempo | voice+; 
-composer: 'C:' TEXT endline;
-length: 'L:' DIGIT+ '/' (DIGIT+)? endline;
-meter: 'M:' 'C' | 'C|' | DIGIT+ '/' DIGIT+ endline;
-tempo: 'Q:' DIGIT+ '/' DIGIT+ '=' DIGIT+ endline;
-key: 'K:' BASENOTE accidental? 'm'? endline;
-accidental: '#' | 'b';
-
-
-
+root: music EOF;
 music: element* NEWLINE | voice | comment;
 element: noteelement | BARLINE | tupletelement | nthrepeat | WHITESPACE;
 
@@ -45,10 +23,6 @@ OCTAVE: '\''+ | ','+;
 
 ACCIDENTAL: '^' | '^^' | '_' | '__' | '=';
 BASENOTE: [a-gA-G];
-WHITESPACE : ' ' | '\t';
-
-
-
 
 
 comment: '%' TEXT NEWLINE;
@@ -56,4 +30,4 @@ TEXT: ~'<'+;
 endline: comment? | NEWLINE;
 DIGIT: [0-9];
 NEWLINE: '\r'? '\n';
-SPACES : [ ]+ -> skip;
+WHITESPACE : ' ' | '\t';
