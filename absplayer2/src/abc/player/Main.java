@@ -1,5 +1,8 @@
 package abc.player;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Main entry point of your application.
  */
@@ -13,12 +16,15 @@ public class Main {
      * System.exit().)
      * 
      * @param file the name of input abc file
+     * @throws IOException 
      */
-    public static void play(String file) {
-        // YOUR CODE HERE
+    public static void play(String file) throws IOException {
+        File abcFile = new File(file);
+        Abc abc = Parser.parseAbc(abcFile);
+        
     }
 
-    public static void main(String[] args) {
-        // CALL play() HERE USING ARGS
+    public static void main(String[] args) throws IOException{
+        play ("sample_abc/test.abc");
     }
 }

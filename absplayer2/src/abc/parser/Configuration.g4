@@ -1,5 +1,6 @@
 grammar Configuration;
 
+
 // This puts a package statement at the top of the output Java files.
 @header {
 package abc.parser;
